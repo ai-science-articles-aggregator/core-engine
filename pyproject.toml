@@ -1,0 +1,15 @@
+[project]
+name = "core-engine"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Денис Мовсумов", email = "damovsumov@edu.hse.ru"},
+]
+dependencies = ["fastapi>=0.124.4", "uvicorn>=0.38.0", "pydantic>=2.12.5", "python-multipart>=0.0.20"]
+requires-python = "==3.13.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
