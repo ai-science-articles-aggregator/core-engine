@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
 from core.auth import security
-from routers import health, users, auth
+from routers import health, auth
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -34,7 +34,6 @@ app = FastAPI(
 security.handle_errors(app)
 
 app.include_router(health.router)
-app.include_router(users.router)
 app.include_router(auth.router)
 
 if __name__ == "__main__":
