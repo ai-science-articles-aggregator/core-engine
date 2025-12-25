@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     db_name: str = Field("appdb", env="DATABASE_NAME")
     db_user: str = Field("root", env="DATABASE_USER")
     db_password: str = Field("root1234", env="DATABASE_PASSWORD")
-    database_url: str = Field(None, env="DATABASE_URL")
 
     @property
     def database_url_asyncpg(self) -> str:
@@ -30,12 +29,6 @@ class Settings(BaseSettings):
     # Приложение
     debug: bool = Field(False, env="DEBUG")
     port: int = Field(8000, env="PORT")
-    # secret_key: str = Field(..., env="SECRET_KEY")
-    
-    # Вычисляемое поле
-    # @property
-    # def database_url(self) -> str:
-    #     return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
     
     class Config:
         env_file = ".env"

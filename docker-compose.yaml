@@ -19,11 +19,11 @@ services:
         read_only: false
 
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DATABASE_USER:-postgres}"]
+      test: ["CMD", "pg_isready", "-U", "${DATABASE_USER}", "-d", "${DATABASE_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 10s
 
   app:
     build:

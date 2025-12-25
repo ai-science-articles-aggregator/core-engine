@@ -1,9 +1,10 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     gcc \
+    libpq-dev \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
@@ -11,8 +12,8 @@ RUN pip install --no-cache-dir pdm
 
 COPY pyproject.toml pdm.lock ./
 
-RUN pdm config python.use_venv false && \
-    pdm install --prod --no-lock
+RUN pdm config python.use_venv false \
+    && pdm install --prod --frozen-lockfile
 
 COPY . .
 
