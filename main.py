@@ -31,6 +31,7 @@ def run_migrations():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    run_migrations()
     # TODO(delete): Удалить после сдачи чекпоинта, для моделей будет отдельный микросервис
     ml_service = SummarizationService("allenai/led-large-16384-arxiv")
     ml_service.load_model()
