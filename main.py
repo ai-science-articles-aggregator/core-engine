@@ -20,7 +20,7 @@ def run_migrations():
         logger.info("Running DB migrations...")
 
         alembic_cfg = Config("alembic.ini")
-        alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url_asyncpg + "?async_fallback=True")
+        alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url_psycopg)
         command.upgrade(alembic_cfg, "head")
 
         logger.info("Migrations applied successfully.")
