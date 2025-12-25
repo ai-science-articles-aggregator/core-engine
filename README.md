@@ -4,7 +4,7 @@ Backend приложение на FastAPI с аутентификацией и �
 
 ## Требования
 
-- Python 3.13
+- Python 3.12
 - PDM (Python Dependency Manager)
 - Docker и Docker Compose (для запуска через Docker)
 

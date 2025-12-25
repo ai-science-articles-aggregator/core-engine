@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Response, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_session
-from dependecies.user_di import get_user_service
-from domain.schemas.token import TokenResponse, LoginRequest
-from domain.schemas.user import UserCreate
-from services.user_service import UserService
+from dependecies import get_auth_service
+from domain.schemas import TokenResponse, LoginRequest
+from domain.schemas import UserCreate
+from services import AuthService
 
 from core.auth import security
 
@@ -15,12 +14,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(
     user_create: UserCreate,
     response: Response,
-    service: UserService = Depends(get_user_service)
+    service: AuthService = Depends(get_auth_service)
 ):
     try:
         resp = await service.create_user(user_create=user_create)
 
-        # Удалить, устанавливать куки на frontend
         security.set_access_cookies(resp.access_token, response)
         security.set_refresh_cookies(resp.refresh_token, response)
         
@@ -35,12 +33,11 @@ async def register(
 async def login(
     credentials: LoginRequest,
     response: Response,
-    service: UserService = Depends(get_user_service)
+    service: AuthService = Depends(get_auth_service)
 ):
     try:
         resp = await service.authenticate(email=credentials.email, password=credentials.password)
 
-        # Удалить, устанавливать куки на frontend
         security.set_access_cookies(resp.access_token, response)
         security.set_refresh_cookies(resp.refresh_token, response)
 
@@ -50,3 +47,21 @@ async def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
         )
+
+@router.post("/refresh")
+async def refresh_token(
+    response: Response, 
+    payload = Depends(security.refresh_token_required)
+):
+    print(f'payload.sub={payload.sub}')
+    user_id = payload.sub
+
+    new_access_token = security.create_access_token(uid=str(user_id))
+    new_refresh_token = security.create_refresh_token(uid=str(user_id))
+    
+    security.set_access_cookies(new_access_token, response)
+    security.set_refresh_cookies(new_refresh_token, response)
+    
+    return {"status": "tokens rotated"}
+
+

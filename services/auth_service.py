@@ -6,7 +6,7 @@ from repositories.user_repository import UserRepository
 from factories.user_factory import UserFactory
 from domain.schemas.user import UserCreate, UserResponse
 
-class UserService:
+class AuthService:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
@@ -18,22 +18,17 @@ class UserService:
 
         user = UserFactory.create_from_schema(user_create)
 
+        print(f'{user=}')
+
         await self.repository.add(user)
 
-        access_token = security.create_access_token(uid=user.email)
-        refresh_token = security.create_refresh_token(uid=user.email)
+        access_token = security.create_access_token(uid=str(user.id))
+        refresh_token = security.create_refresh_token(uid=str(user.id))
 
         return TokenResponse(
             access_token=access_token,
             refresh_token=refresh_token
         )
-
-    async def get_user(self, user_id: int) -> User:
-        user = await self.repository.get(user_id)
-
-        if not user:
-            raise HTTPException(404, "Пользователь не найден")
-        return user
 
     async def authenticate(self, email: str, password: str) -> TokenResponse:
         user = await self.repository.authenticate(email, password)
@@ -41,8 +36,8 @@ class UserService:
         if not user:
             raise HTTPException(401, "Login or Password is not true")
 
-        access_token = security.create_access_token(uid=user.email)
-        refresh_token = security.create_refresh_token(uid=user.email)
+        access_token = security.create_access_token(uid=str(user.id))
+        refresh_token = security.create_refresh_token(uid=str(user.id))
 
         return TokenResponse(
             access_token=access_token,
