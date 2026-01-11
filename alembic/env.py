@@ -1,24 +1,25 @@
 import os
 import sys
-
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+
+from sqlalchemy import engine_from_config, pool
+
 from alembic import context
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from core.config import settings
-
 from database import Base
-from domain.models import user
+from domain.models import Notebook, User
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", settings.database_url_asyncpg + "?async_fallback=True")
+config.set_main_option(
+    "sqlalchemy.url", settings.database_url_asyncpg + "?async_fallback=True"
+)
 
 target_metadata = Base.metadata
 
@@ -44,9 +45,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

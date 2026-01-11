@@ -4,8 +4,8 @@ Backend приложение на FastAPI с аутентификацией и �
 
 ## Требования
 
-- Python 3.12
-- PDM (Python Dependency Manager)
+- Python 3.13
+- uv (Python package and project manager)
 - Docker и Docker Compose (для запуска через Docker)
 
 ## Настройка окружения
@@ -41,7 +41,7 @@ cp .env.example .env
 **Важно:** Обязательно измените `SECRET_KEY` на безопасный случайный ключ в продакшн окружении! Для этого можете воспользоваться утилитой:
 
 ```bash
-cd core/utils & pdm run python generate_key.py
+cd core/utils & uv run python generate_key.py
 ```
 
 ## Запуск приложения
@@ -51,7 +51,7 @@ cd core/utils & pdm run python generate_key.py
 1. Установите зависимости через PDM:
 
 ```bash
-pdm install
+uv sync
 ```
 
 2. Убедитесь, что PostgreSQL запущен и доступен по адресу из `.env`
@@ -59,13 +59,13 @@ pdm install
 3. Запустите приложение:
 
 ```bash
-pdm run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Или через Python напрямую:
 
 ```bash
-pdm run python main.py
+uv run python main.py
 ```
 
 Приложение будет доступно по адресу: `http://localhost:8000`
@@ -77,13 +77,13 @@ pdm run python main.py
 2. Запустите все сервисы:
 
 ```bash
-docker-compose up --build
+docker-compose -f docker-compose.dev.yml up --build
 ```
 
 Для запуска в фоновом режиме:
 
 ```bash
-docker-compose up -d --build
+docker-compose -f docker-compose.dev.yml up -d --build
 ```
 
 3. Приложение будет доступно по адресу: `http://localhost:8000`

@@ -1,10 +1,11 @@
 from fastapi import HTTPException
+
 from core.auth import security
-from domain.models.user import User
 from domain.schemas.token import TokenResponse
-from repositories.user_repository import UserRepository
+from domain.schemas.user import UserCreate
 from factories.user_factory import UserFactory
-from domain.schemas.user import UserCreate, UserResponse
+from repositories.user_repository import UserRepository
+
 
 class AuthService:
     def __init__(self, repository: UserRepository):
@@ -18,17 +19,14 @@ class AuthService:
 
         user = UserFactory.create_from_schema(user_create)
 
-        print(f'{user=}')
+        print(f"{user=}")
 
         await self.repository.add(user)
 
         access_token = security.create_access_token(uid=str(user.id))
         refresh_token = security.create_refresh_token(uid=str(user.id))
 
-        return TokenResponse(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
     async def authenticate(self, email: str, password: str) -> TokenResponse:
         user = await self.repository.authenticate(email, password)
@@ -39,7 +37,4 @@ class AuthService:
         access_token = security.create_access_token(uid=str(user.id))
         refresh_token = security.create_refresh_token(uid=str(user.id))
 
-        return TokenResponse(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token)

@@ -1,38 +1,43 @@
-from authx import AuthX, AuthXConfig
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Annotated
+
 from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
+
     # База данных
-    db_host: str = Field("localhost", env="DATABASE_HOST")
-    db_port: int = Field(5432, env="DATABASE_PORT")
-    db_name: str = Field("appdb", env="DATABASE_NAME")
-    db_user: str = Field("root", env="DATABASE_USER")
-    db_password: str = Field("root1234", env="DATABASE_PASSWORD")
+    db_host: Annotated[str, Field(alias="DATABASE_HOST")] = "localhost"
+    db_port: Annotated[int, Field(alias="DATABASE_PORT")] = 5432
+    db_name: Annotated[str, Field(alias="DATABASE_NAME")] = "appdb"
+    db_user: Annotated[str, Field(alias="DATABASE_USER")] = "root"
+    db_password: Annotated[str, Field(alias="DATABASE_PASSWORD")] = "root1234"
 
     @property
     def database_url_asyncpg(self) -> str:
         return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
-    
+
     @property
     def database_url_psycopg(self) -> str:
         return f"postgresql+psycopg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
 
     # JWT
-    secret_key: str = Field("Your_secret_key", env="SECRET_KEY")
-    jwt_algorithm: str = Field("HS256", env="JWT_ALGORITHM")
-    jwt_access_token_expire_minutes: int = Field(30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
-    jwt_refresh_token_expire_days: int = Field(7, env="REFRESH_TOKEN_EXPIRE_DAYS")
-    jwt_cookie_secure: bool = Field(False, env="JWT_COOKIE_SECURE=False")
+    secret_key: Annotated[str, Field(alias="SECRET_KEY")] = "Your_secret_key"
+    jwt_algorithm: Annotated[str, Field(alias="JWT_ALGORITHM")] = "HS256"
+    jwt_access_token_expire_minutes: Annotated[
+        int, Field(alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    ] = 30
+    jwt_refresh_token_expire_days: Annotated[
+        int, Field(alias="REFRESH_TOKEN_EXPIRE_DAYS")
+    ] = 7
+    jwt_cookie_secure: Annotated[bool, Field(alias="JWT_COOKIE_SECURE")] = False
 
-    
     # Приложение
-    debug: bool = Field(False, env="DEBUG")
-    port: int = Field(8000, env="PORT")
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra="allow"
+    debug: Annotated[bool, Field(alias="DEBUG")] = False
+    port: Annotated[int, Field(alias="PORT")] = 8000
+
 
 settings = Settings()

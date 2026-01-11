@@ -1,3 +1,11 @@
-from .forward import ForwardRequest, ForwardResponse
-from .token import TokenResponse, LoginRequest
+from .notebook import NotebookResponse
+from .token import LoginRequest, TokenResponse
 from .user import UserCreate, UserResponse
+
+__all__ = [
+    "LoginRequest",
+    "TokenResponse",
+    "UserCreate",
+    "UserResponse",
+    "NotebookResponse",
+]

@@ -1,18 +1,18 @@
-import uvicorn
 import logging
-
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
+import uvicorn
+from alembic.config import Config
+from fastapi import FastAPI
+
+from alembic import command
 from core.auth import security
 from core.config import settings
-from routers import health, auth, forward
-from services import SummarizationService
-from alembic.config import Config
-from alembic import command
+from routers import auth, health, notebooks
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("alembic.runtime")
+
 
 def run_migrations():
     """Миграции"""
@@ -29,28 +29,17 @@ def run_migrations():
         raise e
 
 
-@asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    # TODO(delete): Удалить после сдачи чекпоинта, для моделей будет отдельный микросервис
-    ml_service = SummarizationService("allenai/led-large-16384-arxiv")
-    ml_service.load_model()
-    app.state.ml_service = ml_service
-    yield
-    del app.state.ml_service
 
-app = FastAPI(
-    title="Backend",
-    version="0.1.0",
-    description="",
-    lifespan=lifespan
-)
+
+app = FastAPI(title="Backend", version="0.1.0", description="")
 
 security.handle_errors(app)
 
-app.include_router(health)
-app.include_router(auth)
-app.include_router(forward)
+app.include_router(health, prefix="/api/v1")
+app.include_router(auth, prefix="/api/v1")
+app.include_router(notebooks, prefix="/api/v1")
 
 if __name__ == "__main__":
     uvicorn.run(
