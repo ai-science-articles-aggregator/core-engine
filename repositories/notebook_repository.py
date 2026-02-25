@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,22 +17,30 @@ class NotebookRepository:
         await self.db.refresh(notebook)
         return notebook
 
-    async def get_notebook(self, notebook_id: int) -> Optional[Notebook]:
+    async def get_notebook(self, notebook_id: UUID) -> Optional[Notebook]:
         return await self.db.get(Notebook, notebook_id)
 
-    # async def update_notebook(
-    #     self, notebook_id: int, notebook: Notebook
-    # ) -> Optional[Notebook]:
-    #     notebook = await self.db.get(Notebook, notebook_id)
-    #     if notebook:
-    #         notebook.title = notebook.title
-    #         notebook.description = notebook.description
-    #         await self.db.commit()
-    #         await self.db.refresh(notebook)
-    #     return notebook
+    async def get_notebooks_by_user(self, user_id: UUID) -> list[Notebook]:
+        result = await self.db.execute(
+            select(Notebook).where(Notebook.user_id == user_id)
+        )
+        return result.scalars().all()
 
-    async def delete_notebook(self, notebook_id: int) -> bool:
-        notebook = await self.db.get(Notebook, notebook_id)
+    async def update_notebook(
+        self, notebook_id: UUID, name: str | None = None, description: str | None = None
+    ) -> Optional[Notebook]:
+        notebook = await self.get_notebook(notebook_id)
+        if notebook:
+            if name:
+                notebook.name = name
+            if description is not None:
+                notebook.description = description
+            await self.db.commit()
+            await self.db.refresh(notebook)
+        return notebook
+
+    async def delete_notebook(self, notebook_id: UUID) -> bool:
+        notebook = await self.get_notebook(notebook_id)
         if notebook:
             await self.db.delete(notebook)
             await self.db.commit()

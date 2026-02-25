@@ -1,12 +1,15 @@
 import uuid
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from database import Base
+
+if TYPE_CHECKING:
+    from .notebook import Notebook
 
 class User(Base):
     __tablename__ = "users"
@@ -27,6 +30,12 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False
+    )
+
+    # Отношения
+    notebooks: Mapped[list["Notebook"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

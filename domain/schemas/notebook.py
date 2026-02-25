@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 
 
 class NotebookBase(BaseModel):
@@ -24,6 +25,27 @@ class NotebookCreate(NotebookBase):
 
 
 class NotebookResponse(NotebookBase):
-    id: str
+    id: UUID
+    user_id: UUID
     created_at: datetime
     updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("id", "user_id")
+    def serialize_uuid(self, value: UUID) -> str:
+        return str(value)
+
+
+class NotebookListResponse(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("id")
+    def serialize_uuid(self, value: UUID) -> str:
+        return str(value)

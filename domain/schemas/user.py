@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_serializer
 
 class UserBase(BaseModel):
     username: str = Field(
@@ -25,7 +27,11 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     """DTO для ответа API (output)"""
-    id: str
+    id: UUID
     created_at: datetime
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("id")
+    def serialize_uuid(self, value: UUID) -> str:
+        return str(value)
