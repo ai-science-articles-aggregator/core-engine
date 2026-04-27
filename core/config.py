@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # База данных
     db_host: Annotated[str, Field(alias="DATABASE_HOST")] = "localhost"
-    db_port: Annotated[int, Field(alias="DATABASE_PORT")] = 5432
+    db_port: Annotated[int, Field(alias="DATABASE_PORT")] = 5433
     db_name: Annotated[str, Field(alias="DATABASE_NAME")] = "appdb"
     db_user: Annotated[str, Field(alias="DATABASE_USER")] = "root"
     db_password: Annotated[str, Field(alias="DATABASE_PASSWORD")] = "root1234"

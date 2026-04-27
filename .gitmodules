@@ -1,0 +1,3 @@
+[submodule "proto_contracts"]
+	path = proto_contracts
+	url = git@github.com:ai-science-articles-aggregator/proto_contracts.git

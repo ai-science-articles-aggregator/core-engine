@@ -1,4 +1,12 @@
-from .notebook import NotebookCreate, NotebookListResponse, NotebookResponse
+from .notebook import (
+    ArticleResult,
+    NotebookCreate,
+    NotebookListResponse,
+    NotebookResponse,
+    SearchRequest,
+    SearchResponse,
+    SummarizeRequest,
+)
 from .token import LoginRequest, TokenResponse
 from .user import UserCreate, UserResponse
 
@@ -10,4 +18,8 @@ __all__ = [
     "NotebookCreate",
     "NotebookResponse",
     "NotebookListResponse",
+    "ArticleResult",
+    "SearchRequest",
+    "SearchResponse",
+    "SummarizeRequest",
 ]

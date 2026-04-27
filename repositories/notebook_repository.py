@@ -46,3 +46,24 @@ class NotebookRepository:
             await self.db.commit()
             return True
         return False
+
+    async def save_search_results(
+        self,
+        notebook_id: UUID,
+        query: str,
+        articles: list[dict],
+    ) -> None:
+        from domain.models import Article
+
+        for article_data in articles:
+            article = Article(
+                arxiv_id=article_data["id"],
+                title=article_data["title"],
+                authors=article_data["authors"],
+                score=article_data["score"],
+                query=query,
+                notebook_id=notebook_id,
+            )
+            self.db.add(article)
+
+        await self.db.commit()

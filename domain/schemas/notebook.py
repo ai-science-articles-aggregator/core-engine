@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field, ConfigDict, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 
 class NotebookBase(BaseModel):
@@ -49,3 +49,25 @@ class NotebookListResponse(BaseModel):
     @field_serializer("id")
     def serialize_uuid(self, value: UUID) -> str:
         return str(value)
+
+
+class ArticleResult(BaseModel):
+    id: str  # arxiv_id из RAG
+    title: str
+    authors: str
+    score: float
+
+
+class SearchRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=500)
+    top_k: int = Field(default=10, ge=1, le=50)
+
+
+class SearchResponse(BaseModel):
+    query: str
+    articles: list[ArticleResult]
+
+
+class SummarizeRequest(BaseModel):
+    article_ids: list[str] = Field(..., min_length=1, max_length=50)
+    query: str = Field(..., min_length=1, max_length=500)
