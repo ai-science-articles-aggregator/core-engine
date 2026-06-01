@@ -10,7 +10,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from core.config import settings
 from database import Base
-from domain.models import Notebook, User
+from domain.models import (
+    Area,
+    File,
+    Notebook,
+    NotebookChatMessage,
+    NotebookNote,
+    NotebookShare,
+    NotebookSource,
+    NotebookTag,
+    Tag,
+    User,
+)
 
 config = context.config
 

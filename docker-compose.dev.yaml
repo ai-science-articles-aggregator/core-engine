@@ -35,7 +35,7 @@ services:
     app:
         build:
             context: .
-            dockerfile: dockerfile
+            dockerfile: Dockerfile
         container_name: app
         ports:
             - "${PORT}:${PORT}"

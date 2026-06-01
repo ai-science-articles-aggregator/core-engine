@@ -101,7 +101,7 @@ async def get_profile(
             logger.warning(f"User not found: {user_id}")
             raise HTTPException(status_code=404, detail="User not found")
         
-        logger.info(f"User found: {user.username}")
+        logger.info(f"User found: {user.email}")
         return UserResponse.model_validate(user)
     except HTTPException:
         raise

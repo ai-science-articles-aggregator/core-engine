@@ -12,8 +12,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from summary.v1 import summary_pb2_grpc
 
 from database import get_session
-from repositories import NotebookRepository
-from services import NotebookService
+from dependecies.areas_di import get_area_service
+from dependecies.shares_di import get_share_repository
+from dependecies.tags_di import get_tag_service
+from repositories import NotebookRepository, ShareRepository
+from services import AreaService, NotebookService, TagService
 
 _rag_channel = grpc.aio.insecure_channel(os.getenv("RAG_GRPC_URL", "localhost:50051"))
 _summary_channel = grpc.aio.insecure_channel(
@@ -29,8 +32,11 @@ async def get_notebooks_repository(
 
 async def get_notebooks_service(
     repository: NotebookRepository = Depends(get_notebooks_repository),
+    area_service: AreaService = Depends(get_area_service),
+    tag_service: TagService = Depends(get_tag_service),
+    share_repository: ShareRepository = Depends(get_share_repository),
 ) -> NotebookService:
-    return NotebookService(repository)
+    return NotebookService(repository, area_service, tag_service, share_repository)
 
 
 def get_rag_stub() -> rag_pb2_grpc.RAGServiceStub:

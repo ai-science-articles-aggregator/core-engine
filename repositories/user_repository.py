@@ -12,10 +12,14 @@ class UserRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def add(self, user: User) -> User:
+    async def add(self, user: User, *, commit: bool = True) -> User:
         self.db.add(user)
-        await self.db.commit()
-        await self.db.refresh(user)
+        if commit:
+            await self.db.commit()
+            await self.db.refresh(user)
+        else:
+            await self.db.flush()
+            await self.db.refresh(user)
         return user
 
     async def authenticate(self, email: str, password: str) -> Optional[User]:
