@@ -12,6 +12,9 @@ jobs:
             packages: write
         steps:
             - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+                  token: ${{ secrets.INFRA_TOKEN }}
 
             - name: Login to GHCR
               uses: docker/login-action@v3
@@ -23,6 +26,7 @@ jobs:
             - name: Build & Push
               uses: docker/build-push-action@v5
               with:
+                  context: .
                   push: true
                   tags: ghcr.io/ai-science-articles-aggregator/core-engine:latest
 
