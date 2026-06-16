@@ -18,8 +18,8 @@ RUN mkdir -p generated && uv run python -m grpc_tools.protoc \
     -I ./proto_contracts \
     --python_out=./generated \
     --grpc_python_out=./generated \
-    ./proto_contracts/rag/v1/rag.proto \
-    ./proto_contracts/summary/v1/summary.proto
+    ./proto_contracts/retrieval/v1/retrieval.proto \
+    ./proto_contracts/agent/v1/agent.proto
 
 COPY . .
 

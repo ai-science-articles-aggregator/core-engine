@@ -28,13 +28,15 @@ class MessageRepository:
         await self.db.refresh(message)
         return message
 
-    async def selected_arxiv_ids(self, notebook_id: UUID) -> list[str]:
-        """arxiv_id всех selected sources тетради — для передачи в summary_stub."""
-        from domain.models import Article
+    async def selected_article_ids(self, notebook_id: UUID) -> list[str]:
+        """article_id всех selected sources тетради — для передачи в summary_stub.
 
+        Это те же id, что шлёт /summarize (data.article_ids) и что лежат в
+        arxivdb.articles.id (= search_e5_large_new.article_id). Берём напрямую
+        из NotebookSource, без джойна к app-БД Article.
+        """
         result = await self.db.execute(
-            select(Article.arxiv_id)
-            .join(NotebookSource, NotebookSource.article_id == Article.id)
+            select(NotebookSource.article_id)
             .where(
                 NotebookSource.notebook_id == notebook_id,
                 NotebookSource.selected.is_(True),

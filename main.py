@@ -35,7 +35,10 @@ async def lifespan(app: FastAPI):
     # startup
     run_migrations()
     yield
-    # shutdown — nothing for now
+    # shutdown — закрываем gRPC-каналы к ml_cores
+    from dependecies.notebooks_di import close_grpc_channels
+
+    await close_grpc_channels()
 
 
 app = FastAPI(

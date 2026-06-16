@@ -29,8 +29,8 @@ from services import NotebookService
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, "generated"))
 
-from rag.v1 import rag_pb2, rag_pb2_grpc
-from summary.v1 import summary_pb2, summary_pb2_grpc
+from retrieval.v1 import retrieval_pb2, retrieval_pb2_grpc
+from agent.v1 import agent_pb2, agent_pb2_grpc
 
 router = APIRouter(
     prefix="/notebooks",
@@ -165,7 +165,7 @@ async def search_articles(
     data: SearchRequest,
     payload=Depends(security.access_token_required),
     service: NotebookService = Depends(get_notebooks_service),
-    rag_stub: rag_pb2_grpc.RAGServiceStub = Depends(get_rag_stub),
+    rag_stub: retrieval_pb2_grpc.RetrievalServiceStub = Depends(get_rag_stub),
 ):
     user_id = UUID(payload.sub)
     _, role = await _resolve_with_role(service, notebook_id, user_id)
@@ -173,8 +173,8 @@ async def search_articles(
     _require_role(role, {"owner", "viewer", "commenter", "editor"}, "search in this notebook")
 
     try:
-        response = await rag_stub.Search(
-            rag_pb2.SearchRequest(query=data.query, top_k=data.top_k)
+        response = await rag_stub.Retrieve(
+            retrieval_pb2.RetrieveRequest(query=data.query, top_k=data.top_k)
         )
     except grpc.aio.AioRpcError as e:
         raise HTTPException(
@@ -197,7 +197,7 @@ async def summarize_articles(
     data: SummarizeRequest,
     payload=Depends(security.access_token_required),
     service: NotebookService = Depends(get_notebooks_service),
-    summary_stub: summary_pb2_grpc.SummaryServiceStub = Depends(get_summary_stub),
+    summary_stub: agent_pb2_grpc.AgentServiceStub = Depends(get_summary_stub),
 ):
     user_id = UUID(payload.sub)
     _, role = await _resolve_with_role(service, notebook_id, user_id)
@@ -205,9 +205,9 @@ async def summarize_articles(
 
     async def event_stream():
         try:
-            async for response in summary_stub.Summarize(
-                summary_pb2.SummarizeRequest(
-                    article_ids=data.article_ids, query=data.query
+            async for response in summary_stub.Run(
+                agent_pb2.AgentRequest(
+                    article_ids=data.article_ids, query=data.query, mode="summarize"
                 )
             ):
                 payload_data = json.dumps({"token": response.token})

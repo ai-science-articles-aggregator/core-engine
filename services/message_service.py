@@ -42,9 +42,9 @@ class MessageService:
         собирает финальный текст и сохраняет assistant-message в БД.
         Если summary недоступен или нет sources — fallback к простому ответу.
         """
-        from summary.v1 import summary_pb2  # local import — generated code
+        from agent.v1 import agent_pb2  # local import — generated code
 
-        article_ids = await self.repository.selected_arxiv_ids(notebook_id)
+        article_ids = await self.repository.selected_article_ids(notebook_id)
 
         assembled_tokens: list[str] = []
         had_error = False
@@ -60,8 +60,8 @@ class MessageService:
             yield await emit({"token": fallback})
         else:
             try:
-                async for response in summary_stub.Summarize(
-                    summary_pb2.SummarizeRequest(
+                async for response in summary_stub.Run(
+                    agent_pb2.AgentRequest(
                         article_ids=article_ids, query=user_text
                     )
                 ):
