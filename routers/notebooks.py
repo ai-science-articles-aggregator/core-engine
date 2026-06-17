@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from core.auth import security
+from core.constants.streaming import STREAM_STATUS_PREFIX
 from core.utils.slug import slugify
 from dependecies import (
     get_notebooks_service,
@@ -210,7 +211,13 @@ async def summarize_articles(
                     article_ids=data.article_ids, query=data.query, mode="summarize"
                 )
             ):
-                payload_data = json.dumps({"token": response.token})
+                tok = response.token
+                # Transient status (e.g. "Reading articles…") → `status` event.
+                if tok.startswith(STREAM_STATUS_PREFIX):
+                    status_data = json.dumps({"status": tok[len(STREAM_STATUS_PREFIX):]})
+                    yield f"data: {status_data}\n\n"
+                    continue
+                payload_data = json.dumps({"token": tok})
                 yield f"data: {payload_data}\n\n"
         except grpc.aio.AioRpcError as e:
             error = json.dumps({"error": e.details()})

@@ -4,6 +4,7 @@ from uuid import UUID
 
 import grpc
 
+from core.constants.streaming import STREAM_STATUS_PREFIX
 from domain.models import NotebookChatMessage
 from domain.schemas.messages import ChatMessageCreate, ChatMessageRead
 from repositories import MessageRepository
@@ -66,6 +67,11 @@ class MessageService:
                     )
                 ):
                     tok = response.token
+                    # Transient status (e.g. "Reading articles…") — surface it
+                    # as a `status` event, don't fold it into the saved answer.
+                    if tok.startswith(STREAM_STATUS_PREFIX):
+                        yield await emit({"status": tok[len(STREAM_STATUS_PREFIX):]})
+                        continue
                     assembled_tokens.append(tok)
                     yield await emit({"token": tok})
             except grpc.aio.AioRpcError as e:
