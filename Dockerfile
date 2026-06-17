@@ -13,14 +13,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
-COPY proto_contracts/ ./proto_contracts/
-RUN mkdir -p generated && uv run python -m grpc_tools.protoc \
-    -I ./proto_contracts \
-    --python_out=./generated \
-    --grpc_python_out=./generated \
-    ./proto_contracts/retrieval/v1/retrieval.proto \
-    ./proto_contracts/agent/v1/agent.proto
-
+# gRPC-стабы уже закоммичены в generated/ и попадают в образ через COPY . .
+# Генерировать через protoc на сборке не нужно: сабмодуль proto_contracts
+# в CI не инициализируется, из-за чего шаг и падал.
 COPY . .
 
 ENV PYTHONUNBUFFERED=1
