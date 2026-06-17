@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from rag.v1 import rag_pb2 as rag_dot_v1_dot_rag__pb2
+from retrieval.v1 import retrieval_pb2 as retrieval_dot_v1_dot_retrieval__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in rag/v1/rag_pb2_grpc.py depends on'
+        + ' but the generated code in retrieval/v1/retrieval_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class RAGServiceStub(object):
+class RetrievalServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,43 +34,43 @@ class RAGServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Search = channel.unary_unary(
-                '/ragify.v1.RAGService/Search',
-                request_serializer=rag_dot_v1_dot_rag__pb2.SearchRequest.SerializeToString,
-                response_deserializer=rag_dot_v1_dot_rag__pb2.SearchResponse.FromString,
+        self.Retrieve = channel.unary_unary(
+                '/retrieval.v1.RetrievalService/Retrieve',
+                request_serializer=retrieval_dot_v1_dot_retrieval__pb2.RetrieveRequest.SerializeToString,
+                response_deserializer=retrieval_dot_v1_dot_retrieval__pb2.RetrieveResponse.FromString,
                 _registered_method=True)
 
 
-class RAGServiceServicer(object):
+class RetrievalServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Search(self, request, context):
+    def Retrieve(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_RAGServiceServicer_to_server(servicer, server):
+def add_RetrievalServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Search': grpc.unary_unary_rpc_method_handler(
-                    servicer.Search,
-                    request_deserializer=rag_dot_v1_dot_rag__pb2.SearchRequest.FromString,
-                    response_serializer=rag_dot_v1_dot_rag__pb2.SearchResponse.SerializeToString,
+            'Retrieve': grpc.unary_unary_rpc_method_handler(
+                    servicer.Retrieve,
+                    request_deserializer=retrieval_dot_v1_dot_retrieval__pb2.RetrieveRequest.FromString,
+                    response_serializer=retrieval_dot_v1_dot_retrieval__pb2.RetrieveResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'ragify.v1.RAGService', rpc_method_handlers)
+            'retrieval.v1.RetrievalService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('ragify.v1.RAGService', rpc_method_handlers)
+    server.add_registered_method_handlers('retrieval.v1.RetrievalService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class RAGService(object):
+class RetrievalService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Search(request,
+    def Retrieve(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +83,9 @@ class RAGService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ragify.v1.RAGService/Search',
-            rag_dot_v1_dot_rag__pb2.SearchRequest.SerializeToString,
-            rag_dot_v1_dot_rag__pb2.SearchResponse.FromString,
+            '/retrieval.v1.RetrievalService/Retrieve',
+            retrieval_dot_v1_dot_retrieval__pb2.RetrieveRequest.SerializeToString,
+            retrieval_dot_v1_dot_retrieval__pb2.RetrieveResponse.FromString,
             options,
             channel_credentials,
             insecure,

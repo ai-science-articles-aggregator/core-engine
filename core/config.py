@@ -68,6 +68,14 @@ class Settings(BaseSettings):
     debug: Annotated[bool, Field(alias="DEBUG")] = False
     port: Annotated[int, Field(alias="PORT")] = 8000
 
+    # ---- gRPC: сервисы ml_cores ------------------------------------------
+    # Адреса retrieval (RAG) и агентского (Summary) сервисов. В Docker compose
+    # пробрасываются как host.docker.internal:<port>, локально — localhost.
+    rag_grpc_url: Annotated[str, Field(alias="RAG_GRPC_URL")] = "localhost:50051"
+    summary_grpc_url: Annotated[str, Field(alias="SUMMARY_GRPC_URL")] = (
+        "localhost:50052"
+    )
+
     # CORS — либо явный CSV список origin'ов, либо regex для dev-режима.
     # Если cors_origins не пуст, regex игнорируется.
     cors_origins: Annotated[str, Field(alias="CORS_ORIGINS")] = ""

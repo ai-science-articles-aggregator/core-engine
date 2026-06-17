@@ -4,6 +4,7 @@ from uuid import UUID
 
 import grpc
 
+from core.constants.streaming import STREAM_STATUS_PREFIX
 from domain.models import NotebookChatMessage
 from domain.schemas.messages import ChatMessageCreate, ChatMessageRead
 from repositories import MessageRepository
@@ -42,9 +43,9 @@ class MessageService:
         собирает финальный текст и сохраняет assistant-message в БД.
         Если summary недоступен или нет sources — fallback к простому ответу.
         """
-        from summary.v1 import summary_pb2  # local import — generated code
+        from agent.v1 import agent_pb2  # local import — generated code
 
-        article_ids = await self.repository.selected_arxiv_ids(notebook_id)
+        article_ids = await self.repository.selected_article_ids(notebook_id)
 
         assembled_tokens: list[str] = []
         had_error = False
@@ -60,12 +61,17 @@ class MessageService:
             yield await emit({"token": fallback})
         else:
             try:
-                async for response in summary_stub.Summarize(
-                    summary_pb2.SummarizeRequest(
+                async for response in summary_stub.Run(
+                    agent_pb2.AgentRequest(
                         article_ids=article_ids, query=user_text
                     )
                 ):
                     tok = response.token
+                    # Transient status (e.g. "Reading articles…") — surface it
+                    # as a `status` event, don't fold it into the saved answer.
+                    if tok.startswith(STREAM_STATUS_PREFIX):
+                        yield await emit({"status": tok[len(STREAM_STATUS_PREFIX):]})
+                        continue
                     assembled_tokens.append(tok)
                     yield await emit({"token": tok})
             except grpc.aio.AioRpcError as e:

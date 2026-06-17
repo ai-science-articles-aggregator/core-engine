@@ -6,7 +6,7 @@ DATABASE_URL_ASYNC = settings.database_url_asyncpg
 
 engine = create_async_engine(
     DATABASE_URL_ASYNC,
-    echo=True,
+    echo=settings.debug,
     future=True
 )
 

@@ -1,9 +1,11 @@
 """Read-only маппинг таблицы `articles` из внешней RAG БД.
 
 Используем отдельный `ArticlesBase`, чтобы наш alembic эту таблицу не трогал.
-Мапим только подмножество колонок, нужных фронту в карточке source'а.
-Полный текст / clean_text / sectioned_text / section_text_new НЕ грузим —
-они большие и фронту не нужны.
+Мапим подмножество колонок, нужных фронту в карточке source'а. Большие поля
+(text / clean_text / sectioned_text / section_text_new / references_id) НЕ грузим.
+
+ВАЖНО: `articles.id` — это text-идентификатор статьи, совпадающий с
+`search_e5_large_new.article_id`, который retrieval возвращает как ArticleResult.id.
 """
 from datetime import datetime
 from typing import Optional

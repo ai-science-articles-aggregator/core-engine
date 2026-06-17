@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from summary.v1 import summary_pb2 as summary_dot_v1_dot_summary__pb2
+from agent.v1 import agent_pb2 as agent_dot_v1_dot_agent__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in summary/v1/summary_pb2_grpc.py depends on'
+        + ' but the generated code in agent/v1/agent_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class SummaryServiceStub(object):
+class AgentServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,43 +34,43 @@ class SummaryServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Summarize = channel.unary_stream(
-                '/summary.v1.SummaryService/Summarize',
-                request_serializer=summary_dot_v1_dot_summary__pb2.SummarizeRequest.SerializeToString,
-                response_deserializer=summary_dot_v1_dot_summary__pb2.SummarizeResponse.FromString,
+        self.Run = channel.unary_stream(
+                '/agent.v1.AgentService/Run',
+                request_serializer=agent_dot_v1_dot_agent__pb2.AgentRequest.SerializeToString,
+                response_deserializer=agent_dot_v1_dot_agent__pb2.AgentResponse.FromString,
                 _registered_method=True)
 
 
-class SummaryServiceServicer(object):
+class AgentServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Summarize(self, request, context):
+    def Run(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_SummaryServiceServicer_to_server(servicer, server):
+def add_AgentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Summarize': grpc.unary_stream_rpc_method_handler(
-                    servicer.Summarize,
-                    request_deserializer=summary_dot_v1_dot_summary__pb2.SummarizeRequest.FromString,
-                    response_serializer=summary_dot_v1_dot_summary__pb2.SummarizeResponse.SerializeToString,
+            'Run': grpc.unary_stream_rpc_method_handler(
+                    servicer.Run,
+                    request_deserializer=agent_dot_v1_dot_agent__pb2.AgentRequest.FromString,
+                    response_serializer=agent_dot_v1_dot_agent__pb2.AgentResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'summary.v1.SummaryService', rpc_method_handlers)
+            'agent.v1.AgentService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('summary.v1.SummaryService', rpc_method_handlers)
+    server.add_registered_method_handlers('agent.v1.AgentService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class SummaryService(object):
+class AgentService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Summarize(request,
+    def Run(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +83,9 @@ class SummaryService(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            '/summary.v1.SummaryService/Summarize',
-            summary_dot_v1_dot_summary__pb2.SummarizeRequest.SerializeToString,
-            summary_dot_v1_dot_summary__pb2.SummarizeResponse.FromString,
+            '/agent.v1.AgentService/Run',
+            agent_dot_v1_dot_agent__pb2.AgentRequest.SerializeToString,
+            agent_dot_v1_dot_agent__pb2.AgentResponse.FromString,
             options,
             channel_credentials,
             insecure,
